@@ -6,6 +6,7 @@ import { masterHtml } from "../lib/master-view.js";
 import { getPet, adopt, checkIn, daysAway, progress } from "../lib/pet.js";
 import { animateMaster } from "../lib/motion.js";
 import { moonPhase, moonSvg } from "../lib/moon.js";
+import { mountMoonScene } from "../lib/moonscene.js";
 import { randInt } from "../lib/util.js";
 import { tap, thud } from "../lib/device.js";
 import { mount } from "./shell.js";
@@ -14,6 +15,9 @@ export const xpBar = (p, pr) => `<div class="xp"><div class="bar"><i style="widt
   <small>${pr.next ? t("xpNext", p.xp, pr.left, L(pr.next.name)) : t("xpMax", p.xp)}</small></div>`;
 
 let choosing = false;
+
+// 무대 위 마스터 키: 220px의 1.5배. 가로로 긴 캐릭터(다람쥐·코끼리·고양이)는 무대 폭(약 320px)을 넘지 않게 줄여요
+const stageH = m => Math.min(330, Math.round(320 / m.ar));
 
 export function renderMaster(reset) {
   if (reset === true) choosing = false;          // 탭으로 새로 들어오면 고르기 화면은 닫아요
@@ -26,12 +30,11 @@ export function renderMaster(reset) {
     : gained && away >= 3 ? t("mMissed", away)
     : t("mLines")[randInt(t("mLines").length)];
   const ph = moonPhase();
-  const stage = () => `<div class="moonbg">${moonSvg(ph)}</div>${masterHtml(getPet(), { h:220, motion:true })}`;
   mount(`
     <div class="head"><h1>${t("mTitle")}</h1><p>${t("mLead")}</p></div>
     <section class="card rise room">
-      <div class="bubble" id="say">${line}</div>
-      <div class="stage" id="stage">${stage()}</div>
+      <div class="stage" id="stage"><canvas class="sky" aria-hidden="true"></canvas>
+        <div class="bubble" id="say">${line}</div>${masterHtml(getPet(), { h:stageH(m), motion:true })}</div>
       <p class="moonday">${t("moonToday", ph.emoji, L(ph.name))}</p>
       <div class="who center">${L(m.name)} <span class="chip" style="margin:0">${L(pr.cur.name)}</span></div>
       <p class="small center">${L(m.kind)} · ${L(m.gift)}</p>
@@ -45,6 +48,7 @@ export function renderMaster(reset) {
     <button class="btn" type="button" id="change" style="width:100%">${t("mChange")}</button>
     <p class="hint center">${t("mHint")}</p>`, { tab:"master" });
 
+  mountMoonScene($("stage").querySelector("canvas.sky"));        // 별 하늘 + 10초마다 그림자가 지나가는 푸른 보름달
   const mover = animateMaster($("stage").querySelector(".mst"));
   $("stage").addEventListener("click", () => {
     thud();
