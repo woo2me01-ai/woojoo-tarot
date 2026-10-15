@@ -18,7 +18,7 @@ export function weekOf(today) {
 // 빛나는 별 모양(네 갈래 반짝임 + 가운데 동그라미). n = 별 개수(1~5)로 크기가 정해져요 · on = 골라 보는 날(노란 별)
 function sparkle(x, y, n, on) {
   const r = 1.6 + n * .9, L = r * (1.8 + n * .25), w = r * .38, f = v => v.toFixed(1);
-  const color = on ? "var(--lemon)" : n >= 4 ? "#f4f1ff" : n >= 3 ? "#d9d2ff" : "#a99fd6";
+  const color = on ? "var(--lemon)" : n >= 4 ? "var(--wk1)" : n >= 3 ? "var(--wk2)" : "var(--wk3)";   // 테마별 색 (styles.css)
   return `<g class="wk-star${on ? " today" : ""}" style="--d:${(Math.random() * 2).toFixed(2)}s">
     ${on || n >= 4 ? `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 2.6)}" fill="${color}" opacity=".18"/>` : ""}
     <path d="M${f(x)} ${f(y - L)} L${f(x + w)} ${f(y - w)} L${f(x + L)} ${f(y)} L${f(x + w)} ${f(y + w)} L${f(x)} ${f(y + L)} L${f(x - w)} ${f(y + w)} L${f(x - L)} ${f(y)} L${f(x - w)} ${f(y - w)}Z" fill="${color}"/>
@@ -35,7 +35,7 @@ export function weekChartHtml(days, scores, ti, sel = ti, { replay = true } = {}
   const label = d => LANG === "en" ? WD_SHORT.en[d.wd] : WD_SHORT.ko[d.wd];
   const aria = t("weekAria", days.map((d, i) => `${label(d)} ${scores[i]}`).join(", "));
   return `<svg class="weekchart${replay ? "" : " still"}" viewBox="0 0 ${W} ${H}" role="group" aria-label="${aria}">
-    <polyline class="wk-line" points="${line}" pathLength="100" fill="none" stroke="rgba(196,181,253,.55)" stroke-width="1.1" stroke-linejoin="round"/>
+    <polyline class="wk-line" points="${line}" pathLength="100" fill="none" stroke="var(--wkline)" stroke-width="1.1" stroke-linejoin="round"/>
     ${xs.map((x, i) => `<g class="${i > ti ? "future" : ""}">${sparkle(x, ys[i], starCount(scores[i]), i === sel)}</g>`).join("")}
     <text x="${xs[sel].toFixed(1)}" y="${(ys[sel] - 9 - starCount(scores[sel]) * 1.6).toFixed(1)}" class="wk-score">${scores[sel]}</text>
     ${xs.map((x, i) => `<text x="${x.toFixed(1)}" y="${H - 6}" class="wk-day${i === sel ? " sel" : ""}${i === ti ? " today" : ""}${i > ti ? " future" : ""}">${label(days[i])}</text>`).join("")}

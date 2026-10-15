@@ -7,6 +7,7 @@ import { SIGNS } from "../data/zodiac.js";
 import { go } from "../lib/router.js";
 import * as store from "../lib/store.js";
 import { mount } from "./shell.js";
+import { applyTheme } from "../lib/theme.js";
 
 const VERSION = "0.1.0";
 
@@ -28,6 +29,7 @@ export function renderSettings() {
         <label class="switch"><input type="checkbox" id="rev"${st.reversed ? " checked" : ""}><span></span></label></div>
       <div class="setrow"><div class="lab"><b>${t("sReveal")}</b></div>${seg("reveal", [["each", t("sRevealEach")], ["all", t("sRevealAll")]], st.reveal)}</div>
       <div class="setrow"><div class="lab"><b>${t("sLang")}</b></div>${seg("lang", [["ko", "한국어"], ["en", "English"]], LANG)}</div>
+      <div class="setrow"><div class="lab"><b>${t("sTheme")}</b></div>${seg("theme", [["dark", t("sThemeDark")], ["light", t("sThemeLight")], ["system", t("sThemeSystem")]], st.theme || "dark")}</div>
     </section>
     <section class="card rise">
       <h2>${t("sAbout")}</h2>
@@ -48,4 +50,5 @@ export function renderSettings() {
   });
   wireSeg("reveal", v => save({ reveal:v }));
   wireSeg("lang", v => { save({ lang:v }); setLang(v); renderSettings(); });
+  wireSeg("theme", v => { save({ theme:v }); applyTheme(v); });
 }

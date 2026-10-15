@@ -4,7 +4,7 @@ import { Preferences } from "@capacitor/preferences";
 
 const KEYS = ["profile", "settings", "daily", "history", "streak", "pet", "sajuLog"];
 const DEFAULTS = {
-  settings: { reversed:true, reveal:"each", lang:null },
+  settings: { reversed:true, reveal:"each", lang:null, theme:"dark" },
   history: [],
 };
 const mem = {};

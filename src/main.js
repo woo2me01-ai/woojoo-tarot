@@ -15,12 +15,14 @@ import { renderSettings } from "./screens/settings.js";
 import { renderMaster } from "./screens/master.js";
 import { applyCardMoon } from "./lib/moon.js";
 import { isPanelOpen, closeSharePanel } from "./lib/share.js";
+import { applyTheme } from "./lib/theme.js";
 
 const TAB_ROOTS = ["home", "tarot", "master", "zodiac", "settings"];
 
 await initStore();
 applyCardMoon();                       // 카드 뒷면 가운데 달을 오늘 모양으로
 setLang(get("settings").lang || LANG);
+applyTheme(get("settings").theme);       // 다크 · 화이트 · 기기 설정 따르기
 
 route("profile", renderProfile);
 route("home", renderHome);
