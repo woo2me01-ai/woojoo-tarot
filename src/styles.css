@@ -283,6 +283,9 @@ a.plain{color:var(--lav)}
 .room{text-align:center}
 .stage{position:relative;height:340px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:18px;cursor:pointer}
 .stage .moonbg{width:320px;height:320px;bottom:-24px}   /* 캔버스 가장자리는 달무리 자리 (달 지름 256px) */
+/* 달 뒤 밤하늘(skyscene.js): 무대보다 조금 넓게, 가장자리는 카드 배경으로 스며들게 */
+.stage .sky{position:absolute;left:-18px;right:-18px;top:-10px;bottom:0;width:calc(100% + 36px);height:calc(100% + 10px);pointer-events:none;
+  -webkit-mask-image:radial-gradient(ellipse 60% 58% at 50% 52%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 60% 58% at 50% 52%,#000 55%,transparent 100%)}
 .stage .mst{z-index:1}
 .bubble{position:relative;display:inline-block;max-width:92%;margin:0 auto 6px;padding:9px 14px;border-radius:16px;
   background:#fbf7ef;color:#2e2520;font-size:14px;font-weight:600;line-height:1.45}
@@ -308,6 +311,7 @@ a.plain{color:var(--lav)}
 .mpick .pv .mst{z-index:1}
 .mpick b{font-size:14px;margin-top:4px}
 .mpick small{font-size:11px;color:var(--muted)}
+.mpick .lv{font-style:normal;font-size:10px;font-weight:700;color:var(--lav);margin-top:2px}   /* 예전에 키운 마스터의 단계 */
 .mpick.on{border-color:rgba(167,139,250,.8);background:rgba(139,92,246,.22);box-shadow:0 0 18px rgba(139,92,246,.35)}
 .gift{color:var(--lav);font-size:14px;margin:14px 0 0;min-height:1.4em}
 .primary:disabled{opacity:.45;cursor:not-allowed}

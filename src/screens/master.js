@@ -2,11 +2,12 @@
 import { $ } from "../lib/util.js";
 import { L, t } from "../lib/i18n.js";
 import { MASTERS, STAGES, masterOf, XP_ATTEND, XP_CARD } from "../data/masters.js";
-import { masterHtml } from "../lib/master-view.js";
-import { getPet, adopt, checkIn, daysAway, progress } from "../lib/pet.js";
+import { masterHtml, stageOf } from "../lib/master-view.js";
+import { getPet, adopt, checkIn, daysAway, progress, xpOf } from "../lib/pet.js";
 import { animateMaster } from "../lib/motion.js";
 import { phaseOf } from "../lib/moon.js";
 import { mountMoonScene } from "../lib/moonscene.js";
+import { mountSky } from "../lib/skyscene.js";
 import { randInt } from "../lib/util.js";
 import { tap, thud } from "../lib/device.js";
 import { mount } from "./shell.js";
@@ -26,7 +27,7 @@ export function renderMaster(reset) {
   const line = gained && gained.stageUp ? t("mStageUp", L(pr.cur.name))
     : gained && away >= 3 ? t("mMissed", away)
     : t("mLines")[randInt(t("mLines").length)];
-  const stage = () => `<canvas class="moonbg" aria-hidden="true"></canvas>${masterHtml(getPet(), { h:220, motion:true, fit:165 })}`;   // 직접 찍은 달 사진
+  const stage = () => `<canvas class="sky" aria-hidden="true"></canvas><canvas class="moonbg" aria-hidden="true"></canvas>${masterHtml(getPet(), { h:220, motion:true, fit:165 })}`;   // 직접 찍은 달 사진
   mount(`
     <div class="head"><h1>${t("mTitle")}</h1><p>${t("mLead")}</p></div>
     <section class="card rise room">
@@ -45,6 +46,7 @@ export function renderMaster(reset) {
     <button class="btn" type="button" id="change" style="width:100%">${t("mChange")}</button>
     <p class="hint center">${t("mHint")}</p>`, { tab:"master" });
 
+  mountSky($("stage").querySelector("canvas.sky"));                // 달 뒤 은하수 + 떨어지는 유성
   // 오늘 밤 서울에서 보이는 실제 달 모양 (그린 뒤 이름·밝기를 아래에 적어요)
   mountMoonScene($("stage").querySelector("canvas.moonbg"), v => {
     const n = phaseOf(v.lit, v.waxing);
@@ -68,7 +70,7 @@ function renderAdopt(p) {
         : `<div class="head"><h1>${t("mPickTitle")}</h1><p>${t("mPickLead")}</p></div>`}
     <div class="masters" id="list">${MASTERS.map(m => `
       <button type="button" class="mpick${m.id === pick ? " on" : ""}" data-id="${m.id}">
-        <span class="pv"><canvas class="pvmoon" aria-hidden="true"></canvas>${preview(m.id)}</span><b>${L(m.name)}</b><small>${L(m.kind)}</small></button>`).join("")}</div>
+        <span class="pv"><canvas class="pvmoon" aria-hidden="true"></canvas>${preview(m.id)}</span><b>${L(m.name)}</b><small>${L(m.kind)}</small>${xpOf(m.id) ? `<em class="lv">${L(STAGES[stageOf(xpOf(m.id))].name)}</em>` : ""}</button>`).join("")}</div>
     <p class="gift center" id="gift">${pick ? L(masterOf(pick).gift) : t("mPickHint")}</p>
     <button class="primary" type="button" id="ok"${pick ? "" : " disabled"}>${t(p ? "mChangeOk" : "mAdopt")}</button>
     ${p ? `<p class="hint center">${t("mKeepXp")}</p>` : ""}`, { tab:"master" });

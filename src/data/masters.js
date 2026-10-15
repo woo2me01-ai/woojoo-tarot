@@ -21,12 +21,13 @@ export const MASTERS = [
 
 export const masterOf = id => MASTERS.find(m => m.id === id) || null;
 
-/* 성장 5단계 — 하루 최대 20XP(출석 15 + 오늘의 카드 5), 매일 들어오면 90일째에 그랜드 마스터 */
+/* 성장 5단계 — 하루 최대 20XP(출석 15 + 오늘의 카드 5), 매일 들어오면 약 6개월(180일)째에 그랜드 마스터
+   (꼬마 10일 · 견습 40일 · 수석 90일 · 그랜드 180일) */
 export const XP_ATTEND = 15, XP_CARD = 5;
 export const STAGES = [
   { xp:0,    scale:.62, name:P("아기 점술가", "Baby seer") },
-  { xp:100,  scale:.72, name:P("꼬마 점술가", "Little seer") },
-  { xp:400,  scale:.82, name:P("견습 마스터", "Apprentice master") },
-  { xp:900,  scale:.91, name:P("수석 마스터", "Senior master") },
-  { xp:1800, scale:1,   name:P("그랜드 마스터", "Grand master") },
+  { xp:200,  scale:.72, name:P("꼬마 점술가", "Little seer") },
+  { xp:800,  scale:.82, name:P("견습 마스터", "Apprentice master") },
+  { xp:1800, scale:.91, name:P("수석 마스터", "Senior master") },
+  { xp:3600, scale:1,   name:P("그랜드 마스터", "Grand master") },
 ];
