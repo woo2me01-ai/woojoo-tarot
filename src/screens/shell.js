@@ -2,7 +2,7 @@
 import { t } from "../lib/i18n.js";
 import { back } from "../lib/router.js";
 
-const TABS = [["home", "🏠", "tabHome"], ["tarot", "🃏", "tabTarot"], ["zodiac", "✨", "tabZodiac"], ["settings", "⚙️", "tabSettings"]];
+const TABS = [["home", "🏠", "tabHome"], ["tarot", "🃏", "tabTarot"], ["master", "🧙", "tabMaster"], ["zodiac", "✨", "tabZodiac"], ["settings", "⚙️", "tabSettings"]];
 
 export function mount(html, { tab = null, fallback = "home" } = {}) {
   const app = document.getElementById("app");

@@ -67,6 +67,14 @@ export const leadOf = (s, i) => s.theme ? L(s.theme.lead[i]) : "";
 const yesScore = pk => pk.rev ? { yes:0, maybe:-1, no:0 }[TAROT[pk.n].yes] : { yes:1, maybe:0, no:-1 }[TAROT[pk.n].yes];
 export const answerOf = pk => L(ANSWERS[pk.rev ? "rev" : "up"][TAROT[pk.n].yes]);
 
+// 결과의 분위기: 1 좋음 · 0 반반 · -1 아쉬움 (마스터 표정에 써요). 여러 장이면 마지막 카드에 두 배 무게
+export function toneOf(s) {
+  const p = s.picks;
+  if (s.spread === "choice" && p.length >= 3) return Math.sign(Math.max(yesScore(p[1]), yesScore(p[2])));
+  const sum = p.reduce((a, pk, i) => a + yesScore(pk) * (p.length >= 3 && i === p.length - 1 ? 2 : 1), 0);
+  return p.length >= 3 ? (sum >= 2 ? 1 : sum < 0 ? -1 : 0) : Math.sign(sum);
+}
+
 // 여러 장일 때 한 줄 정리: 마지막(결과) 카드에 두 배 무게
 export function summaryOf(s) {
   const p = s.picks;

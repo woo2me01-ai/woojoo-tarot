@@ -12,10 +12,13 @@ import { renderDraw } from "./screens/draw.js";
 import { renderResult } from "./screens/result.js";
 import { renderZodiac } from "./screens/zodiac.js";
 import { renderSettings } from "./screens/settings.js";
+import { renderMaster } from "./screens/master.js";
+import { applyCardMoon } from "./lib/moon.js";
 
-const TAB_ROOTS = ["home", "tarot", "zodiac", "settings"];
+const TAB_ROOTS = ["home", "tarot", "master", "zodiac", "settings"];
 
 await initStore();
+applyCardMoon();                       // 카드 뒷면 가운데 달을 오늘 모양으로
 setLang(get("settings").lang || LANG);
 
 route("profile", renderProfile);
@@ -26,6 +29,7 @@ route("draw", renderDraw);
 route("result", renderResult);
 route("zodiac", renderZodiac);
 route("settings", renderSettings);
+route("master", () => renderMaster(true));
 
 // 프로필이 없으면 첫 화면은 프로필 입력
 startRouter(name => get("profile") ? name : "profile");
@@ -43,5 +47,5 @@ let shownDay = dateKey(kstToday());
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) return;
   const today = dateKey(kstToday());
-  if (today !== shownDay) { shownDay = today; if (currentRoute() === "home") renderHome(); }
+  if (today !== shownDay) { shownDay = today; applyCardMoon(); if (currentRoute() === "home") renderHome(); }
 });

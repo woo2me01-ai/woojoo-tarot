@@ -1,4 +1,4 @@
-/* 해시 라우터: #/home, #/tarot, #/ask/<테마|free>, #/draw, #/result, #/zodiac, #/settings, #/profile */
+/* 해시 라우터: #/home, #/tarot, #/ask/<테마|free>, #/draw, #/result, #/zodiac, #/master, #/settings, #/profile */
 const routes = {};
 let current = null;
 

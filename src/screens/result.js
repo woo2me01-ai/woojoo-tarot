@@ -6,12 +6,28 @@ import { sunSign } from "../lib/zodiac.js";
 import { TAROT, TOPICS } from "../data/cards.js";
 import { SIGNS } from "../data/zodiac.js";
 import { ELEMENTS } from "../data/astro.js";
-import { session, positions, cardMeaning, leadOf, answerOf, summaryOf, zodiacOf, saveHistory, cf } from "../lib/reading.js";
+import { session, positions, cardMeaning, leadOf, answerOf, summaryOf, zodiacOf, saveHistory, cf, toneOf } from "../lib/reading.js";
 import { go } from "../lib/router.js";
 import { copyText, shareText } from "../lib/device.js";
 import * as store from "../lib/store.js";
 import { cardHtml, topbar } from "../lib/view.js";
 import { mount } from "./shell.js";
+import { randInt } from "../lib/util.js";
+import { masterOf } from "../data/masters.js";
+import { masterHtml, posesOf } from "../lib/master-view.js";
+import { getPet } from "../lib/pet.js";
+import { moonSvg } from "../lib/moon.js";
+
+// 풀이 끝에 내 타로 마스터가 한마디 해 줘요. 좋은 결과면 웃고, 아쉬운 결과면 울거나 화를 내요(카드 대신)
+function masterSays(s) {
+  const p = getPet(); if (!p) return "";
+  const tone = toneOf(s), nm = L(masterOf(p.id).name);
+  const sad = ["cry", "angry"].filter(n => posesOf(p.id)[n]);            // 그림이 있는 표정만 (다람쥐는 화남이 없어요)
+  const pose = tone > 0 ? "laugh" : tone < 0 && sad.length ? sad[randInt(sad.length)] : "idle";
+  const lines = t(tone > 0 ? "mResultGood" : tone < 0 ? "mResultBad" : "mResult");
+  return `<a class="msay rise ${tone > 0 ? "good" : tone < 0 ? "bad" : ""}" href="#/master"><div class="mini"><span class="moonbg">${moonSvg()}</span>${masterHtml(p, { h:84, pose })}</div>
+    <div class="bubble"><small>${t("mSays", nm)}</small>${lines[randInt(lines.length)]}</div></a>`;
+}
 
 function shareLines(s, pos) {
   const lab = pk => `${L(TAROT[pk.n].name)}(${t(pk.rev ? "revShort" : "upShort")})`;
@@ -65,6 +81,7 @@ export function renderResult() {
         <div class="t">${z.guardian ? t("guardianHit") : `${zs.sym}︎ ${t("zBlock", L(zs.name))}`}</div>
         ${z.guardian ? "" : `<div class="els">${ELEMENTS[z.signEl].ic} ${L(zs.name)} · ${L(ELEMENTS[z.signEl].name)} × ${ELEMENTS[z.cardEl].ic} ${L(z.card.name)} · ${L(ELEMENTS[z.cardEl].name)}</div>`}
         <p>${L(z.text)}</p></section>` : ""}
+    ${masterSays(s)}
     ${daily ? `<p class="hint center">${t("dailyNote")}</p>` : ""}
     <div class="btns" style="margin-top:16px">
       <button class="btn" type="button" id="share">${t("share")}</button>

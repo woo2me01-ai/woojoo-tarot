@@ -2,7 +2,7 @@
    앱 시작 때 한 번 모두 읽어 메모리에 두고, 쓰기는 메모리 + 기기에 같이 해요. */
 import { Preferences } from "@capacitor/preferences";
 
-const KEYS = ["profile", "settings", "daily", "history", "streak"];
+const KEYS = ["profile", "settings", "daily", "history", "streak", "pet"];
 const DEFAULTS = {
   settings: { reversed:true, reveal:"each", lang:null },
   history: [],

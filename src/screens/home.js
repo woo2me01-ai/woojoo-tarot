@@ -14,6 +14,24 @@ import { tap, thud } from "../lib/device.js";
 import * as store from "../lib/store.js";
 import { cardHtml, catsHtml, luckyHtml, colorDot } from "../lib/view.js";
 import { mount } from "./shell.js";
+import { masterOf } from "../data/masters.js";
+import { masterHtml } from "../lib/master-view.js";
+import { getPet, checkIn, cardXp, progress } from "../lib/pet.js";
+import { xpBar } from "./master.js";
+import { animateMaster } from "../lib/motion.js";
+import { moonSvg } from "../lib/moon.js";
+
+// 홈 위쪽의 마스터 카드 (없으면 데려오기 안내)
+function masterCard(gained) {
+  const p = getPet();
+  if (!p) return `<a class="card rise mhome new" href="#/master"><span class="mnew">🧙</span>
+    <div><b>${t("mHomeNew")}</b><small>${t("mHomeNewD")}</small></div><span class="go">→</span></a>`;
+  const m = masterOf(p.id), pr = progress(p);
+  return `<a class="card rise mhome" href="#/master"><div class="mini"><span class="moonbg">${moonSvg()}</span>${masterHtml(p, { h:92, motion:true })}</div>
+    <div class="minfo"><div class="who">${L(m.name)} <span class="chip" style="margin:0">${L(pr.cur.name)}</span></div>
+      ${gained ? `<span class="badge">${t("xpGot", gained.xp)}</span>` : ""}
+      ${xpBar(p, pr)}</div></a>`;
+}
 
 function updateStreak(today) {
   const s = store.get("streak"), key = dateKey(today);
@@ -35,6 +53,7 @@ const dailyInfo = d => {
 export function renderHome() {
   const p = store.get("profile"), td = kstToday(), ti = dayIdx(td.y, td.m, td.d);
   const streak = updateStreak(td);
+  const gained = checkIn();
   const f = computeFortune(p), z = computeZodiac(p), s = SIGNS[z.sign];
   const daily = savedDaily();
   const e = EL[f.lucky.el], lh = f.lucky.hour, lhStart = (2 * lh - 1) * 60 + 30;
@@ -47,6 +66,8 @@ export function renderHome() {
       <h1>${t("hello", p.name)}</h1>
       ${streak >= 2 ? `<span class="badge">${t("streak", streak)}</span>` : ""}
     </div>
+
+    ${masterCard(gained)}
 
     <section class="card rise">
       <h2>${t("dailyTitle")}</h2>
@@ -93,6 +114,7 @@ export function renderHome() {
     </section>
     <p class="fun">${t("fun")}</p>`, { tab:"home" });
 
+  animateMaster(document.querySelector(".mhome .mst"), { roam:18 });
   const openDaily = () => { setSession(dailySession(savedDaily())); go("result"); };
   if (daily) { $("dailyMore").addEventListener("click", openDaily); $("dailyCard").addEventListener("click", openDaily); return; }
 
@@ -102,6 +124,7 @@ export function renderHome() {
     if (busy) return; busy = true;
     tap();
     const d = drawDaily();
+    if (cardXp()) { document.querySelector(".mhome").outerHTML = masterCard(null); animateMaster(document.querySelector(".mhome .mst"), { roam:18 }); }
     $("dailyCard").innerHTML = cardHtml(d);
     await sleep(60);
     $("dailyCard").querySelector(".tcard").classList.add("flipped");
