@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">우주점빵 타로</string>
+    <string name="title_activity_main">우주점빵 타로</string>
+    <string name="package_name">com.woojoojumbbang.tarot</string>
+    <string name="custom_url_scheme">com.woojoojumbbang.tarot</string>
+</resources>
