@@ -21,7 +21,7 @@ import { xpBar } from "./master.js";
 import { weekOf, weekChartHtml } from "../lib/weekchart.js";
 import { keepToday, dayLog, fromFortune } from "../lib/sajulog.js";
 import { animateMaster } from "../lib/motion.js";
-import { moonSvg } from "../lib/moon.js";
+import { mountMoonScene } from "../lib/moonscene.js";
 
 // 홈 위쪽의 마스터 카드 (없으면 데려오기 안내)
 function masterCard(gained) {
@@ -29,7 +29,7 @@ function masterCard(gained) {
   if (!p) return `<a class="card rise mhome new" href="#/master"><span class="mnew">🧙</span>
     <div><b>${t("mHomeNew")}</b><small>${t("mHomeNewD")}</small></div><span class="go">→</span></a>`;
   const m = masterOf(p.id), pr = progress(p);
-  return `<a class="card rise mhome" href="#/master"><div class="mini"><span class="moonbg">${moonSvg()}</span>${masterHtml(p, { h:92, motion:true, fit:56 })}</div>
+  return `<a class="card rise mhome" href="#/master"><div class="mini"><canvas class="minimoon" aria-hidden="true"></canvas>${masterHtml(p, { h:92, motion:true, fit:56 })}</div>
     <div class="minfo"><div class="who">${L(m.name)} <span class="chip" style="margin:0">${L(pr.cur.name)}</span></div>
       ${gained ? `<span class="badge">${t("xpGot", gained.xp)}</span>` : ""}
       ${xpBar(p, pr)}</div></a>`;
@@ -120,6 +120,7 @@ export function renderHome() {
     <p class="fun">${t("fun")}</p>`, { tab:"home" });
 
   animateMaster(document.querySelector(".mhome .mst"), { roam:18 });
+  mountMoonScene(document.querySelector(".mhome canvas.minimoon"));      // 마스터 방과 같은 오늘 밤 사진 달
   // 요일을 누르면 그날 사주(점수·한 줄·분야별)로 바꿔 보여 줘요
   $("saju").addEventListener("click", e => {
     const h = e.target.closest(".wk-hit, [data-today]"); if (!h) return;
@@ -155,7 +156,11 @@ export function renderHome() {
     if (busy) return; busy = true;
     tap();
     const d = drawDaily();
-    if (cardXp()) { document.querySelector(".mhome").outerHTML = masterCard(null); animateMaster(document.querySelector(".mhome .mst"), { roam:18 }); }
+    if (cardXp()) {
+      document.querySelector(".mhome").outerHTML = masterCard(null);
+      animateMaster(document.querySelector(".mhome .mst"), { roam:18 });
+      mountMoonScene(document.querySelector(".mhome canvas.minimoon"));
+    }
     $("dailyCard").innerHTML = cardHtml(d);
     await sleep(60);
     $("dailyCard").querySelector(".tcard").classList.add("flipped");

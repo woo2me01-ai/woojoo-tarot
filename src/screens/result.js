@@ -16,7 +16,7 @@ import { randInt } from "../lib/util.js";
 import { masterOf } from "../data/masters.js";
 import { masterHtml, posesOf } from "../lib/master-view.js";
 import { getPet } from "../lib/pet.js";
-import { moonSvg } from "../lib/moon.js";
+import { mountMoonScene } from "../lib/moonscene.js";
 
 // 풀이 끝에 내 타로 마스터가 한마디 해 줘요. 좋은 결과면 웃고, 아쉬운 결과면 울거나 화를 내요(카드 대신)
 function masterSays(s) {
@@ -25,7 +25,7 @@ function masterSays(s) {
   const sad = ["cry", "angry"].filter(n => posesOf(p.id)[n]);            // 그림이 있는 표정만 (다람쥐는 화남이 없어요)
   const pose = tone > 0 ? "laugh" : tone < 0 && sad.length ? sad[randInt(sad.length)] : "idle";
   const lines = t(tone > 0 ? "mResultGood" : tone < 0 ? "mResultBad" : "mResult");
-  return `<a class="msay rise ${tone > 0 ? "good" : tone < 0 ? "bad" : ""}" href="#/master"><div class="mini"><span class="moonbg">${moonSvg()}</span>${masterHtml(p, { h:84, pose, fit:52 })}</div>
+  return `<a class="msay rise ${tone > 0 ? "good" : tone < 0 ? "bad" : ""}" href="#/master"><div class="mini"><canvas class="minimoon" aria-hidden="true"></canvas>${masterHtml(p, { h:84, pose, fit:52 })}</div>
     <div class="bubble"><small>${t("mSays", nm)}</small>${lines[randInt(lines.length)]}</div></a>`;
 }
 
@@ -92,6 +92,7 @@ export function renderResult() {
     ${s.kind === "daily" ? "" : `<button class="primary" type="button" id="again">${t("again")}</button>`}
     <button class="linkbtn" type="button" id="home">${t("toHome")}</button>
     <p class="fun">${t("fun")}</p>`, { fallback:"home" });
+  mountMoonScene(document.querySelector(".msay canvas.minimoon"));      // 마스터 방과 같은 오늘 밤 사진 달
 
   // 공유·복사: 웹(woojoojumbbang.com/fortune)과 같은 방식 — 기기 공유 창 → 안 되면 공유 창(카카오톡·인스타그램…)
   wireShare({ share:"share", copy:"copy", msg:"msg", fallback:"shareFallback" }, "tarot",
