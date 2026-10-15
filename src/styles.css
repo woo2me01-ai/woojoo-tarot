@@ -95,6 +95,20 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--violet2);outline
 .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .err{color:#fda4af;font-size:13px;margin-top:10px;min-height:1.2em}
 .hint{font-size:12px;color:var(--muted);margin:10px 0 0}
+/* 공유 창 (웹과 같은 모양): 휴대폰은 아래에서 올라오는 시트, 넓은 화면은 가운데 창 */
+.sharebox{width:100%;min-height:150px;margin-top:8px;padding:10px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.3);color:var(--ink);font:inherit;font-size:13px;resize:none}
+.sheet{position:fixed;inset:0;z-index:30;background:rgba(5,4,15,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;padding:16px}
+.sheet-box{width:100%;max-width:440px;background:#16132f;border:1px solid rgba(167,139,250,.3);border-radius:22px;padding:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);animation:rise .25s ease both}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;font-size:17px;margin-bottom:14px}
+.sheet-x{border:0;background:rgba(255,255,255,.08);color:var(--ink);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px}
+.sp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 6px}
+.sp-btn{display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;color:var(--ink);font:inherit;font-size:12px;cursor:pointer;padding:4px 0}
+.sp-ic{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:800;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.sp-btn:active .sp-ic{transform:translateY(-2px)}
+.sheet .sharebox{min-height:96px;margin-top:6px}
+@media (max-width:520px){ .sheet{align-items:flex-end;padding:0} .sheet-box{border-radius:22px 22px 0 0;max-width:none;padding-bottom:calc(28px + var(--safe-bottom))} }
 .msg{text-align:center;font-size:13px;color:var(--lemon);min-height:1.4em;margin-top:8px}
 .fun{text-align:center;font-size:12px;color:var(--dim);margin:18px 0 0}
 

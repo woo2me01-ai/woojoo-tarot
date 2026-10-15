@@ -14,6 +14,7 @@ import { renderZodiac } from "./screens/zodiac.js";
 import { renderSettings } from "./screens/settings.js";
 import { renderMaster } from "./screens/master.js";
 import { applyCardMoon } from "./lib/moon.js";
+import { isPanelOpen, closeSharePanel } from "./lib/share.js";
 
 const TAB_ROOTS = ["home", "tarot", "master", "zodiac", "settings"];
 
@@ -36,6 +37,7 @@ startRouter(name => get("profile") ? name : "profile");
 
 // 안드로이드 뒤로 가기: 탭 첫 화면이면 홈으로, 홈이면 앱 종료
 App.addListener("backButton", () => {
+  if (isPanelOpen()) { closeSharePanel(); return; }                  // 공유 창이 열려 있으면 먼저 닫기
   const r = currentRoute();
   if (r === "home" || (r === "profile" && !get("profile"))) App.exitApp();
   else if (TAB_ROOTS.includes(r)) location.replace("#/home");

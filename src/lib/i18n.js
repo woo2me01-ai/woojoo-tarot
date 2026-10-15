@@ -125,6 +125,15 @@ const UI = {
   shareDaily: { ko:t => `🃏 오늘의 타로 ${t.m}/${t.d}`, en:t => `🃏 Tarot card of the day ${t.m}/${t.d}` },
   shareAsk:   { ko:"🃏 타로에게 물어봤어요", en:"🃏 I asked the tarot" },
   shareAns:   { ko:"답: ", en:"Answer: " },
+  shareTitle: { ko:"공유하기", en:"Share" },
+  spLinked:   { ko:"받은 사람이 링크를 눌러 바로 운세를 볼 수 있어요.", en:"Your friend can tap the link and try it right away." },
+  spNoLink:   { ko:"⚠ 링크 없이 결과만 공유돼요.", en:"⚠ Only the result is shared — without a link." },
+  kakaoPaste: { ko:"복사했어요! 카카오톡 대화방에 붙여 넣어 보내 주세요.", en:"Copied! Paste it into a KakaoTalk chat." },
+  igPaste:    { ko:"복사했어요! 인스타그램 DM이나 스토리에 붙여 넣어 주세요.", en:"Copied! Paste it into an Instagram DM or story." },
+  kakaoBtn:   { ko:"나도 해 보기", en:"Try it" },
+  close:      { ko:"닫기", en:"Close" },
+  seeToo:     { ko:"👉 나도 해 보기: ", en:"👉 Try it yourself: " },
+  manualCopy: { ko:"아래 글을 길게 눌러 복사해 주세요.", en:"Press and hold the text below to copy it." },
   shareFoot:  { ko:"우주점빵 타로에서 뽑았어요 🌙", en:"Drawn on Woojoo Tarot 🌙" },
 
   /* 별자리 탭 */

@@ -8,7 +8,7 @@ import { SIGNS } from "../data/zodiac.js";
 import { ELEMENTS } from "../data/astro.js";
 import { session, positions, cardMeaning, leadOf, answerOf, summaryOf, zodiacOf, saveHistory, cf, toneOf } from "../lib/reading.js";
 import { go } from "../lib/router.js";
-import { copyText, shareText } from "../lib/device.js";
+import { wireShare } from "../lib/share.js";
 import * as store from "../lib/store.js";
 import { cardHtml, topbar } from "../lib/view.js";
 import { mount } from "./shell.js";
@@ -88,14 +88,14 @@ export function renderResult() {
       <button class="btn" type="button" id="copy">${t("copy")}</button>
     </div>
     <div class="msg" id="msg"></div>
+    <textarea id="shareFallback" class="sharebox hidden" readonly></textarea>
     ${s.kind === "daily" ? "" : `<button class="primary" type="button" id="again">${t("again")}</button>`}
     <button class="linkbtn" type="button" id="home">${t("toHome")}</button>
     <p class="fun">${t("fun")}</p>`, { fallback:"home" });
 
-  const text = () => [...shareLines(s, pos), "", t("shareFoot")].join("\n");
-  const flash = msg => { $("msg").textContent = msg; setTimeout(() => { if ($("msg")) $("msg").textContent = ""; }, 3000); };
-  $("copy").addEventListener("click", async () => { if (await copyText(text())) flash(t("copied")); });
-  $("share").addEventListener("click", async () => { if (!(await shareText(text())) && await copyText(text())) flash(t("copied")); });
+  // 공유·복사: 웹(woojoojumbbang.com/fortune)과 같은 방식 — 기기 공유 창 → 안 되면 공유 창(카카오톡·인스타그램…)
+  wireShare({ share:"share", copy:"copy", msg:"msg", fallback:"shareFallback" }, "tarot",
+    () => [...shareLines(s, pos), "", t("shareFoot")]);
   $("home").addEventListener("click", () => go("home"));
   if ($("again")) $("again").addEventListener("click", () => go(s.theme ? `ask/${s.theme.id}` : "ask/free"));
 }
