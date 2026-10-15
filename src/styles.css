@@ -112,8 +112,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--violet2);outline
 .weekchart .wk-line{stroke-dasharray:100;stroke-dashoffset:100;animation:wkdraw 1.4s .2s ease-out forwards}
 .weekchart .wk-star{transform-box:fill-box;transform-origin:center;animation:wktw 2.6s ease-in-out infinite;animation-delay:var(--d)}
 .weekchart .wk-star.today{animation-duration:1.6s}
+.weekchart .wk-hit{cursor:pointer;outline:none}
+.weekchart .wk-hit:focus-visible{fill:rgba(196,181,253,.12)}
+.weekchart .future{opacity:.4}
+.weekchart.still .wk-line{animation:none;stroke-dashoffset:0}
+.weekchart .wk-day.sel{fill:var(--lemon);font-weight:800}
+.weekchart .wk-day.today:not(.sel){fill:var(--ink);font-weight:800}
+.dayof{font-size:12px;color:var(--lav);margin:-4px 0 8px;font-weight:600}
+h2 .dayof{margin:0 auto 0 6px;font-weight:600}
+.linkbtn.inline{display:inline;margin:0 0 0 6px;font-size:12px;color:var(--lemon)}
 .weekchart text{font-size:9px;fill:var(--muted);text-anchor:middle;font-weight:600}
-.weekchart .wk-day.today{fill:var(--lemon);font-weight:800}
 .weekchart .wk-score{font-size:10px;fill:var(--lemon);font-weight:800}
 @keyframes wkdraw{to{stroke-dashoffset:0}}
 @keyframes wktw{50%{opacity:.6;transform:scale(.82)}}
@@ -248,8 +256,8 @@ a.plain{color:var(--lav)}
 .tabbar{grid-template-columns:repeat(5,1fr)}
 .mst{position:relative;flex:none;user-select:none;-webkit-user-select:none}
 .mst .mover{position:absolute;inset:0}
-.mst .pose{position:absolute;left:50%;bottom:0;transform:translateX(-50%);opacity:0;transition:opacity .28s ease;transform-origin:50% 100%}
-.mst .pose.flip{transform:translateX(-50%) scaleX(-1)}
+.mst .pose{position:absolute;left:50%;bottom:0;transform:translateX(calc(var(--cx, .5) * -100%));opacity:0;transition:opacity .28s ease;transform-origin:50% 100%}
+.mst .pose.flip{transform:translateX(calc(var(--cxf, .5) * -100%)) scaleX(-1)}   /* 몸 가운데(--cx)를 칸 가운데에 */
 .mst .pose.on{opacity:1}
 .mst .pose img{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;filter:drop-shadow(0 0 3px rgba(251,247,239,.55))}
 /* 포즈 바뀔 때 살짝 눌렸다 펴지기 · 엉덩이 흔들기 · 걷기/뛰기 통통 · 누르면 폴짝 */
@@ -265,8 +273,8 @@ a.plain{color:var(--lav)}
 @keyframes mbob{50%{transform:translateY(-3px)}}
 @keyframes mhop{25%{transform:scale(1.06,.92)}55%{transform:translateY(-22px) scale(.97,1.05)}80%{transform:scale(1.04,.96)}}
 @media (prefers-reduced-motion:reduce){ .mst .pose,.mst .mover{animation:none!important;transition:none} }
-.mst.mirror .pose.on{transform:translateX(-50%) scaleX(-1)}
-.mst.mirror .pose.on.flip{transform:translateX(-50%)}
+.mst.mirror .pose.on{transform:translateX(calc(var(--cxf, .5) * -100%)) scaleX(-1)}
+.mst.mirror .pose.on.flip{transform:translateX(calc(var(--cx, .5) * -100%))}
 /* 캐릭터 뒤의 달 (오늘 실제 위상) */
 .moonbg{position:absolute;left:50%;bottom:4%;width:84%;aspect-ratio:1;transform:translateX(-50%);pointer-events:none}
 .moonbg svg{width:100%;height:100%;display:block;overflow:visible}
@@ -295,6 +303,9 @@ a.plain{color:var(--lav)}
 .mpick{display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;border-radius:16px;border:1px solid var(--line);
   background:rgba(255,255,255,.04);cursor:pointer;color:var(--ink);min-width:0}
 .mpick .pv{position:relative;height:130px;width:100%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;overflow:hidden;border-radius:12px}
+/* 달(지름 96px)이 칸 안에 다 보이고, 가운데가 캐릭터 몸 높이쯤 오게 (캔버스 가장자리는 달무리 자리) */
+.mpick .pvmoon{position:absolute;left:50%;top:14px;width:120px;height:120px;transform:translateX(-50%);pointer-events:none}
+.mpick .pv .mst{z-index:1}
 .mpick b{font-size:14px;margin-top:4px}
 .mpick small{font-size:11px;color:var(--muted)}
 .mpick.on{border-color:rgba(167,139,250,.8);background:rgba(139,92,246,.22);box-shadow:0 0 18px rgba(139,92,246,.35)}

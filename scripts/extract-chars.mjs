@@ -128,6 +128,47 @@ function fillInside(buf, w, h, main) {
   }
 }
 
+/* ---------- 몸 가운데 찾기 (꼬리 빼고) ----------
+   그림 안쪽에서 테두리까지 가장 먼 점들(거리 지도 최댓값의 85% 이상)은 머리·몸통처럼 두툼한 곳에 모여요.
+   가는 꼬리·귀·발은 여기 안 들어가서, 이 점들의 가로 평균이 꼬리를 뺀 몸의 가운데예요.
+   꼬리가 몸만큼 두꺼워 틀리는 포즈는 char-sheets.mjs의 cx로 손으로 정해요. */
+function distMap(mask, w, h) {
+  const d = new Float32Array(w * h), D = Math.SQRT2;
+  for (let i = 0; i < w * h; i++) d[i] = mask[i] ? 1e9 : 0;
+  const at = (x, y) => (x < 0 || y < 0 || x >= w || y >= h) ? 0 : d[y * w + x];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x; if (!d[i]) continue;
+    d[i] = Math.min(d[i], at(x - 1, y) + 1, at(x, y - 1) + 1, at(x - 1, y - 1) + D, at(x + 1, y - 1) + D);
+  }
+  for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) {
+    const i = y * w + x; if (!d[i]) continue;
+    d[i] = Math.min(d[i], at(x + 1, y) + 1, at(x, y + 1) + 1, at(x + 1, y + 1) + D, at(x - 1, y + 1) + D);
+  }
+  return d;
+}
+function bodyCenter(buf, w, h) {
+  const mask = new Uint8Array(w * h); for (let i = 0; i < w * h; i++) mask[i] = buf[i * 4 + 3] > 128 ? 1 : 0;
+  const dm = distMap(mask, w, h);
+  let max = 0; for (const v of dm) if (v > max) max = v;
+  let sx = 0, n = 0;
+  for (let i = 0; i < w * h; i++) if (dm[i] >= max * .85) { sx += i % w; n++; }
+  return sx / n / w;
+}
+
+// --viz: 포즈마다 몸 가운데 선을 그린 확인용 그림(scratch/viz-<id>.png)
+const VIZ = process.argv.includes("--viz");
+async function drawViz(id, entry) {
+  const T = 200, tiles = []; let x = 0;
+  for (const [pose, e] of Object.entries(entry)) {
+    const w = Math.round(e.w * T / e.h);
+    const img = await sharp(p(`public/chars/${id}/${pose}.webp`)).resize({ height:T }).png().toBuffer();
+    const svg = `<svg width="${w}" height="${T}"><line x1="${e.cx * w}" x2="${e.cx * w}" y1="0" y2="${T}" stroke="red" stroke-width="2"/><text x="2" y="12" font-size="11">${pose}</text></svg>`;
+    tiles.push({ input:await sharp({ create:{ width:w, height:T, channels:3, background:"#9ab" } }).composite([{ input:img }, { input:Buffer.from(svg) }]).png().toBuffer(), left:x, top:0 });
+    x += w + 4;
+  }
+  await sharp({ create:{ width:x, height:T, channels:3, background:"#fff" } }).composite(tiles).png().toFile(p(`scratch/viz-${id}.png`));
+}
+
 const manifest = {};
 for (const c of CHAR_SHEETS) {
   const sheet = await loadSheet(c.file);
@@ -175,10 +216,12 @@ for (const c of CHAR_SHEETS) {
     await sharp(buf, { raw:{ width:cw, height:ch, channels:4 } }).resize(W, H, { kernel:"lanczos3" })
       .webp({ quality:80, alphaQuality:90, effort:6 }).toFile(p(`public/chars/${c.id}/${pose}.webp`));
     const dir = typeof c.dir === "string" ? c.dir : c.dir && c.dir[pose];
-    entry[pose] = { w:W, h:H,
+    const cx = c.cx && c.cx[pose] != null ? c.cx[pose] : bodyCenter(buf, cw, ch);
+    entry[pose] = { w:W, h:H, cx:+cx.toFixed(3),                                     // 꼬리 뺀 몸 가운데(그림 너비에 대한 비율)
       ...((pose === "walk" || pose === "run") && dir ? { face:dir } : {}),           // 바라보는 쪽은 걷기·달리기에만 써요
       ...(faceOnly || (c.partial && c.partial.includes(pose)) ? { part:true } : {}) };   // 몸이 다 안 그려진 포즈 (기본·누를 때는 안 써요)
   }
+  if (VIZ) await drawViz(c.id, entry);
   console.log(c.id, "아랫줄 배율", (k2 / k).toFixed(2));
 }
 if (!DEBUG) await writeFile(p("src/data/poses.json"), JSON.stringify(manifest));

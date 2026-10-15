@@ -25,7 +25,7 @@ function masterSays(s) {
   const sad = ["cry", "angry"].filter(n => posesOf(p.id)[n]);            // 그림이 있는 표정만 (다람쥐는 화남이 없어요)
   const pose = tone > 0 ? "laugh" : tone < 0 && sad.length ? sad[randInt(sad.length)] : "idle";
   const lines = t(tone > 0 ? "mResultGood" : tone < 0 ? "mResultBad" : "mResult");
-  return `<a class="msay rise ${tone > 0 ? "good" : tone < 0 ? "bad" : ""}" href="#/master"><div class="mini"><span class="moonbg">${moonSvg()}</span>${masterHtml(p, { h:84, pose })}</div>
+  return `<a class="msay rise ${tone > 0 ? "good" : tone < 0 ? "bad" : ""}" href="#/master"><div class="mini"><span class="moonbg">${moonSvg()}</span>${masterHtml(p, { h:84, pose, fit:52 })}</div>
     <div class="bubble"><small>${t("mSays", nm)}</small>${lines[randInt(lines.length)]}</div></a>`;
 }
 

@@ -19,6 +19,7 @@ import { masterHtml } from "../lib/master-view.js";
 import { getPet, checkIn, cardXp, progress } from "../lib/pet.js";
 import { xpBar } from "./master.js";
 import { weekOf, weekChartHtml } from "../lib/weekchart.js";
+import { keepToday, dayLog, fromFortune } from "../lib/sajulog.js";
 import { animateMaster } from "../lib/motion.js";
 import { moonSvg } from "../lib/moon.js";
 
@@ -28,7 +29,7 @@ function masterCard(gained) {
   if (!p) return `<a class="card rise mhome new" href="#/master"><span class="mnew">🧙</span>
     <div><b>${t("mHomeNew")}</b><small>${t("mHomeNewD")}</small></div><span class="go">→</span></a>`;
   const m = masterOf(p.id), pr = progress(p);
-  return `<a class="card rise mhome" href="#/master"><div class="mini"><span class="moonbg">${moonSvg()}</span>${masterHtml(p, { h:92, motion:true })}</div>
+  return `<a class="card rise mhome" href="#/master"><div class="mini"><span class="moonbg">${moonSvg()}</span>${masterHtml(p, { h:92, motion:true, fit:56 })}</div>
     <div class="minfo"><div class="who">${L(m.name)} <span class="chip" style="margin:0">${L(pr.cur.name)}</span></div>
       ${gained ? `<span class="badge">${t("xpGot", gained.xp)}</span>` : ""}
       ${xpBar(p, pr)}</div></a>`;
@@ -56,8 +57,12 @@ export function renderHome() {
   const streak = updateStreak(td);
   const gained = checkIn();
   const f = computeFortune(p), z = computeZodiac(p), s = SIGNS[z.sign];
-  const week = weekOf(td), weekScores = week.map(d => computeFortune(p, d).scores[0]);   // 이번 주 월~일 총운
-  const wi = week.findIndex(d => d.d === td.d && d.m === td.m);
+  keepToday(td, f);                                                     // 오늘 사주를 이 기기에 남겨요 (7일 보관)
+  const week = weekOf(td), wi = week.findIndex(d => d.d === td.d && d.m === td.m);
+  // 요일별 사주: 지난 날은 이 기기에 남은 기록, 기록이 없거나 앞으로 올 날은 다시 계산
+  const dayData = i => i === wi ? { ...fromFortune(f), saved:true }
+    : (i < wi && dayLog(week[i])) ? { ...dayLog(week[i]), saved:true } : { ...fromFortune(computeFortune(p, week[i])), saved:false };
+  const weekDays = week.map((_, i) => dayData(i)), weekScores = weekDays.map(x => x.score);
   const daily = savedDaily();
   const e = EL[f.lucky.el], lh = f.lucky.hour, lhStart = (2 * lh - 1) * 60 + 30;
   const lhName = LANG === "en" ? `${ANIMALS_EN[lh]} ${hm(lhStart)}–${hm(lhStart + 119)}` : `${BRANCHES_KO[lh]}시 ${hm(lhStart)}~${hm(lhStart + 119)}`;
@@ -82,18 +87,12 @@ export function renderHome() {
 
     <section class="card rise">
       <h2>${t("sajuTitle")}</h2>
-      <div class="scoreweek">
-        <div class="sc"><span class="bigstars">${starsHtml(f.scores[0])}</span><span class="score"><b>${f.scores[0]}</b>${t("pts")}</span></div>
-        <div class="wk"><small>${t("weekTitle")}</small>${weekChartHtml(week, weekScores, wi)}</div>
-      </div>
-      <span class="chip">${L(f.god.key)}</span>
-      <p class="summary">${L(f.summary)}</p>
-      ${f.relText ? `<p class="note">${L(f.relText)}</p>` : ""}
+      <div id="saju">${sajuHtml(wi, true)}</div>
     </section>
 
     <section class="card rise">
-      <h2>${t("catsTitle")}</h2>
-      ${catsHtml(f.cats)}
+      <h2>${t("catsTitle")}<span class="dayof" id="catsDay"></span></h2>
+      <div id="cats">${catsHtml(f.cats)}</div>
     </section>
 
     <section class="card rise">
@@ -121,6 +120,32 @@ export function renderHome() {
     <p class="fun">${t("fun")}</p>`, { tab:"home" });
 
   animateMaster(document.querySelector(".mhome .mst"), { roam:18 });
+  // 요일을 누르면 그날 사주(점수·한 줄·분야별)로 바꿔 보여 줘요
+  $("saju").addEventListener("click", e => {
+    const h = e.target.closest(".wk-hit, [data-today]"); if (!h) return;
+    showDay(h.dataset.today != null ? wi : +h.dataset.i);
+  });
+  $("saju").addEventListener("keydown", e => {
+    const h = e.target.closest(".wk-hit"); if (h && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); showDay(+h.dataset.i); }
+  });
+  function showDay(i) {
+    tap();
+    $("saju").innerHTML = sajuHtml(i, false);
+    $("cats").innerHTML = catsHtml(weekDays[i].cats);
+    $("catsDay").textContent = i === wi ? "" : ` · ${t("dayOf", week[i])}`;
+  }
+  function sajuHtml(i, replay) {
+    const d = weekDays[i];
+    return `${i === wi ? "" : `<p class="dayof">${t("dayOf", week[i])}${d.saved ? "" : ` · ${t("sajuRecalc")}`} <button type="button" class="linkbtn inline" data-today>${t("backToday")}</button></p>`}
+      <div class="scoreweek">
+        <div class="sc"><span class="bigstars">${starsHtml(d.score)}</span><span class="score"><b>${d.score}</b>${t("pts")}</span></div>
+        <div class="wk"><small>${t("weekTitle")}</small>${weekChartHtml(week, weekScores, wi, i, { replay })}</div>
+      </div>
+      <span class="chip">${L(d.key)}</span>
+      <p class="summary">${L(d.summary)}</p>
+      ${d.rel ? `<p class="note">${L(d.rel)}</p>` : ""}`;
+  }
+
   const openDaily = () => { setSession(dailySession(savedDaily())); go("result"); };
   if (daily) { $("dailyMore").addEventListener("click", openDaily); $("dailyCard").addEventListener("click", openDaily); return; }
 
