@@ -9,7 +9,7 @@ import * as store from "../lib/store.js";
 import { mount } from "./shell.js";
 import { applyTheme } from "../lib/theme.js";
 
-const VERSION = "0.1.0";
+const VERSION = "1.0.0";   // android/app/build.gradle의 versionName과 같게
 
 export function renderSettings() {
   const p = store.get("profile"), st = store.get("settings"), sign = SIGNS[sunSign(p)];

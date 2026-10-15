@@ -1,4 +1,4 @@
-/* 우주점빵 타로 — 앱 시작 */
+/* 우주 타로 — 앱 시작 */
 import "./styles.css";
 import { App } from "@capacitor/app";
 import { initStore, get } from "./lib/store.js";

@@ -1,6 +1,6 @@
 {
   "appId": "com.woojoojumbbang.tarot",
-  "appName": "우주점빵 타로",
+  "appName": "우주 타로",
   "webDir": "dist",
   "android": { "backgroundColor": "#0a0a18" },
   "plugins": {

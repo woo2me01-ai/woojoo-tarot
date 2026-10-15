@@ -10,7 +10,7 @@ const WD = { ko:"일월화수목금토", en:["Sun","Mon","Tue","Wed","Thu","Fri"
 export const ord = n => n + (n % 10 === 1 && n !== 11 ? "st" : n % 10 === 2 && n !== 12 ? "nd" : n % 10 === 3 && n !== 13 ? "rd" : "th");
 
 const UI = {
-  appName:    { ko:"우주점빵 타로", en:"Woojoo Tarot" },
+  appName:    { ko:"우주 타로", en:"Woojoo Tarot" },
   tabHome:    { ko:"홈", en:"Home" },
   tabTarot:   { ko:"타로", en:"Tarot" },
   tabZodiac:  { ko:"별자리", en:"Zodiac" },
@@ -134,7 +134,7 @@ const UI = {
   close:      { ko:"닫기", en:"Close" },
   seeToo:     { ko:"👉 나도 해 보기: ", en:"👉 Try it yourself: " },
   manualCopy: { ko:"아래 글을 길게 눌러 복사해 주세요.", en:"Press and hold the text below to copy it." },
-  shareFoot:  { ko:"우주점빵 타로에서 뽑았어요 🌙", en:"Drawn on Woojoo Tarot 🌙" },
+  shareFoot:  { ko:"우주 타로에서 뽑았어요 🌙", en:"Drawn on Woojoo Tarot 🌙" },
 
   /* 별자리 탭 */
   zWho:       { ko:(n, s) => (n ? n + "님은 " : "나는 ") + s, en:(n, s) => n ? `${n} is ${s}` : `You are ${s}` },
