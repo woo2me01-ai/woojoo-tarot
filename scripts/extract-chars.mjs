@@ -160,8 +160,10 @@ for (const c of CHAR_SHEETS) {
       k2 = k * (c.row2 || Math.min(1.6, Math.max(1, (fb.y1 - fb.y0) / (wb.y1 - wb.y0) * .96)));
     }
     let kk = ROW2.includes(pose) ? k2 : k;
-    if (pose !== "front" && (pb.y1 - pb.y0) * kk < FRONT_H * .7)            // 얼굴만 그린 표정: 얼굴 너비를 정한 비율로
+    const faceOnly = pose !== "front" && (pb.y1 - pb.y0) * kk < FRONT_H * .7;
+    if (faceOnly)                                   // 얼굴만 그린 표정: 얼굴 너비를 정한 비율로
       kk = (c.faceW || FACE_W) * FRONT_H / (pb.x1 - pb.x0);
+    if (c.scale && c.scale[pose]) kk *= c.scale[pose];
     const solid = c.solid && c.solid.includes(pose);
     const { buf, cw, ch, main } = crop(sheet, lab, pb, solid);
     if (solid) fillInside(buf, cw, ch, main);
@@ -173,7 +175,9 @@ for (const c of CHAR_SHEETS) {
     await sharp(buf, { raw:{ width:cw, height:ch, channels:4 } }).resize(W, H, { kernel:"lanczos3" })
       .webp({ quality:80, alphaQuality:90, effort:6 }).toFile(p(`public/chars/${c.id}/${pose}.webp`));
     const dir = typeof c.dir === "string" ? c.dir : c.dir && c.dir[pose];
-    entry[pose] = { w:W, h:H, ...((pose === "walk" || pose === "run") && dir ? { face:dir } : {}) };   // 바라보는 쪽은 걷기·달리기에만 써요
+    entry[pose] = { w:W, h:H,
+      ...((pose === "walk" || pose === "run") && dir ? { face:dir } : {}),           // 바라보는 쪽은 걷기·달리기에만 써요
+      ...(faceOnly || (c.partial && c.partial.includes(pose)) ? { part:true } : {}) };   // 몸이 다 안 그려진 포즈 (기본·누를 때는 안 써요)
   }
   console.log(c.id, "아랫줄 배율", (k2 / k).toFixed(2));
 }

@@ -5,7 +5,7 @@ import { MASTERS, STAGES, masterOf, XP_ATTEND, XP_CARD } from "../data/masters.j
 import { masterHtml } from "../lib/master-view.js";
 import { getPet, adopt, checkIn, daysAway, progress } from "../lib/pet.js";
 import { animateMaster } from "../lib/motion.js";
-import { moonPhase, moonSvg } from "../lib/moon.js";
+import { moonPhase, moonSvg, phaseOf } from "../lib/moon.js";
 import { mountMoonScene } from "../lib/moonscene.js";
 import { randInt } from "../lib/util.js";
 import { tap, thud } from "../lib/device.js";
@@ -15,9 +15,6 @@ export const xpBar = (p, pr) => `<div class="xp"><div class="bar"><i style="widt
   <small>${pr.next ? t("xpNext", p.xp, pr.left, L(pr.next.name)) : t("xpMax", p.xp)}</small></div>`;
 
 let choosing = false;
-
-// 무대 위 마스터 키: 220px의 1.5배. 가로로 긴 캐릭터(다람쥐·코끼리·고양이)는 무대 폭(약 320px)을 넘지 않게 줄여요
-const stageH = m => Math.min(330, Math.round(320 / m.ar));
 
 export function renderMaster(reset) {
   if (reset === true) choosing = false;          // 탭으로 새로 들어오면 고르기 화면은 닫아요
@@ -29,13 +26,13 @@ export function renderMaster(reset) {
   const line = gained && gained.stageUp ? t("mStageUp", L(pr.cur.name))
     : gained && away >= 3 ? t("mMissed", away)
     : t("mLines")[randInt(t("mLines").length)];
-  const ph = moonPhase();
+  const stage = () => `<canvas class="moonbg" aria-hidden="true"></canvas>${masterHtml(getPet(), { h:220, motion:true })}`;   // 직접 찍은 달 사진
   mount(`
     <div class="head"><h1>${t("mTitle")}</h1><p>${t("mLead")}</p></div>
     <section class="card rise room">
-      <div class="stage" id="stage"><canvas class="sky" aria-hidden="true"></canvas>
-        <div class="bubble" id="say">${line}</div>${masterHtml(getPet(), { h:stageH(m), motion:true })}</div>
-      <p class="moonday">${t("moonToday", ph.emoji, L(ph.name))}</p>
+      <div class="bubble" id="say">${line}</div>
+      <div class="stage" id="stage">${stage()}</div>
+      <p class="moonday" id="moonday"></p>
       <div class="who center">${L(m.name)} <span class="chip" style="margin:0">${L(pr.cur.name)}</span></div>
       <p class="small center">${L(m.kind)} · ${L(m.gift)}</p>
       ${xpBar(getPet(), pr)}
@@ -48,7 +45,11 @@ export function renderMaster(reset) {
     <button class="btn" type="button" id="change" style="width:100%">${t("mChange")}</button>
     <p class="hint center">${t("mHint")}</p>`, { tab:"master" });
 
-  mountMoonScene($("stage").querySelector("canvas.sky"));        // 별 하늘 + 10초마다 그림자가 지나가는 푸른 보름달
+  // 오늘 밤 서울에서 보이는 실제 달 모양 (그린 뒤 이름·밝기를 아래에 적어요)
+  mountMoonScene($("stage").querySelector("canvas.moonbg"), v => {
+    const n = phaseOf(v.lit, v.waxing);
+    if ($("moonday")) $("moonday").textContent = t("moonTonight", n.emoji, L(n.name), Math.round(v.lit * 100));
+  });
   const mover = animateMaster($("stage").querySelector(".mst"));
   $("stage").addEventListener("click", () => {
     thud();

@@ -43,8 +43,9 @@ function buildChart(y, m, d, hourV) {
   return { year:{ s:ys, b:yb }, month, day, hour };
 }
 
-function computeFortune(p) {
-  const today = kstToday(), tKey = dateKey(today);
+// day: 운세를 볼 날짜 (기본은 오늘, 주간 그래프에서는 그 주의 날짜마다)
+function computeFortune(p, day = kstToday()) {
+  const today = day, tKey = dateKey(today);
   const chart = buildChart(p.solar.y, p.solar.m, p.solar.d, p.hour);
   const ti = dayIdx(today.y, today.m, today.d), tp = { s:ti % 10, b:ti % 12 };
   const rng = mulberry32(hashStr(`${dateKey(p.solar)}|${p.hour}|${tKey}`));

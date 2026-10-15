@@ -18,6 +18,7 @@ import { masterOf } from "../data/masters.js";
 import { masterHtml } from "../lib/master-view.js";
 import { getPet, checkIn, cardXp, progress } from "../lib/pet.js";
 import { xpBar } from "./master.js";
+import { weekOf, weekChartHtml } from "../lib/weekchart.js";
 import { animateMaster } from "../lib/motion.js";
 import { moonSvg } from "../lib/moon.js";
 
@@ -55,6 +56,8 @@ export function renderHome() {
   const streak = updateStreak(td);
   const gained = checkIn();
   const f = computeFortune(p), z = computeZodiac(p), s = SIGNS[z.sign];
+  const week = weekOf(td), weekScores = week.map(d => computeFortune(p, d).scores[0]);   // 이번 주 월~일 총운
+  const wi = week.findIndex(d => d.d === td.d && d.m === td.m);
   const daily = savedDaily();
   const e = EL[f.lucky.el], lh = f.lucky.hour, lhStart = (2 * lh - 1) * 60 + 30;
   const lhName = LANG === "en" ? `${ANIMALS_EN[lh]} ${hm(lhStart)}–${hm(lhStart + 119)}` : `${BRANCHES_KO[lh]}시 ${hm(lhStart)}~${hm(lhStart + 119)}`;
@@ -79,7 +82,10 @@ export function renderHome() {
 
     <section class="card rise">
       <h2>${t("sajuTitle")}</h2>
-      <div class="scoreline"><span class="bigstars">${starsHtml(f.scores[0])}</span><span class="score"><b>${f.scores[0]}</b>${t("pts")}</span></div>
+      <div class="scoreweek">
+        <div class="sc"><span class="bigstars">${starsHtml(f.scores[0])}</span><span class="score"><b>${f.scores[0]}</b>${t("pts")}</span></div>
+        <div class="wk"><small>${t("weekTitle")}</small>${weekChartHtml(week, weekScores, wi)}</div>
+      </div>
       <span class="chip">${L(f.god.key)}</span>
       <p class="summary">${L(f.summary)}</p>
       ${f.relText ? `<p class="note">${L(f.relText)}</p>` : ""}

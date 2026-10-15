@@ -57,6 +57,8 @@ const UI = {
   dailyTitle: { ko:"🃏 오늘의 카드", en:"🃏 Card of the day" },
   dailyTap:   { ko:"카드를 눌러 오늘의 카드를 뒤집어 보세요", en:"Tap to turn over today’s card" },
   dailyMore:  { ko:"풀이 자세히 보기", en:"See full reading" },
+  weekTitle:  { ko:"이번 주 흐름", en:"This week" },
+  weekAria:   { ko:s => `이번 주 운세 점수: ${s}`, en:s => `This week’s scores: ${s}` },
   sajuTitle:  { ko:"🔮 오늘의 사주", en:"🔮 Today’s Saju" },
   zodiacTitle:{ ko:"✨ 오늘의 별자리", en:"✨ Today’s horoscope" },
   overall:    { ko:"총운", en:"Overall" },
@@ -165,7 +167,7 @@ const UI = {
                 en:["Yay, a lovely card! Smile all you like today.", "Just keep this flow going. I’m excited too!", "A sparkling result — something nice is on its way!"] },
   mResultBad: { ko:["으앙, 조금 아쉬운 카드예요… 그래도 조언을 따르면 달라질 수 있어요.", "흥! 카드가 좀 심술을 부렸네요. 미래는 정해진 게 아니에요.", "괜찮아요, 오늘은 쉬어 가라는 뜻이에요. 제가 옆에 있을게요."],
                 en:["Aww, a bit of a tough card… but following its advice can change things.", "Hmph! The cards are being grumpy. The future isn’t fixed.", "It’s okay — it just says take it easy today. I’m right here."] },
-  moonToday:  { ko:(e, n) => `${e} 오늘의 달 · ${n}`, en:(e, n) => `${e} Tonight’s moon · ${n}` },
+  moonTonight:{ ko:(e, n, p) => `${e} 오늘 밤 서울의 달 · ${n} · 밝기 ${p}%`, en:(e, n, p) => `${e} Tonight’s moon over Seoul · ${n} · ${p}% lit` },
   mHomeNew:   { ko:"나만의 타로 마스터를 데려와요", en:"Bring home your own tarot master" },
   mHomeNewD:  { ko:"귀여운 마스터 12명 중 하나를 골라 매일 함께 키워요.", en:"Pick one of 12 cute masters and grow together every day." },
 

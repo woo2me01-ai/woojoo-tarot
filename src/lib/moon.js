@@ -7,6 +7,12 @@ const NAMES = [
   [P("보름달", "Full moon"), "🌕"], [P("기우는 달", "Waning gibbous"), "🌖"], [P("하현달", "Last quarter"), "🌗"], [P("그믐달", "Waning crescent"), "🌘"],
 ];
 
+// 밝은 비율·차오름 여부로 이름 고르기 (moonsky.js의 오늘 밤 달에 써요)
+export function phaseOf(lit, waxing) {
+  const i = lit < .03 ? 0 : lit > .97 ? 4 : lit < .45 ? (waxing ? 1 : 7) : lit <= .55 ? (waxing ? 2 : 6) : (waxing ? 3 : 5);
+  return { name:NAMES[i][0], emoji:NAMES[i][1] };
+}
+
 export function moonPhase(day = kstToday()) {
   const ms = Date.UTC(day.y, day.m - 1, day.d, 3);
   const e = ((moonLon(ms) - sunLon(ms)) % 360 + 360) % 360;          // 0 삭 · 90 상현 · 180 보름 · 270 하현
